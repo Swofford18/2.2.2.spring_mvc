@@ -13,47 +13,30 @@
     <title>spring mvc with hiber</title>
 </head>
 <body>
-<table border="1">
-    <thead>
-    <td>
-    <th>First Name</th>
-    <th>Last Name</th>
-    <th>Email</th>
-    </td>
-    </thead>
 
-    <tbody>
+<table border="1">
+    <tr>
+        <td>ID</td>
+        <td>Username</td>
+        <td>Password</td>
+        <td>Email</td>
+        <td>Action</td>
+    </tr>
     <c:forEach items="${users}" var="user">
         <tr>
             <td>${user.id}</td>
-            <td>${user.firstName}</td>
-            <td>${user.lastName}</td>
+            <td>${user.username}</td>
+            <td>${user.password}</td>
             <td>${user.email}</td>
-            <td width="60px"><a href="<c:url value='users/remove/${user.id}'/>">Delete</a></td>
+            <td width="60px">
+                <a href="<c:url value='admin/update/${user.id}'/>">Edit</a>
+                <a href="<c:url value='admin/remove/${user.id}'/>">Delete</a>
+            </td>
         </tr>
     </c:forEach>
-    </tbody>
+
 </table>
-<table border="1">
-    <tr>
-        <td>
-            <form method="post" action="/users/add">
-                <input type="text" required placeholder="email" name="email"><br>
-                <input type="text" required placeholder="firstName" name="firstName"><br>
-                <input type="text" required placeholder="lastName" name="lastName"><br>
-                <input type="submit" value="ADD">
-            </form>
-        </td>
-        <td>
-            <form method="post" action="/users/update">
-                <input type="text" required placeholder="id" name="id"><br>
-                <input type="text" required placeholder="email" name="email"><br>
-                <input type="text" required placeholder="firstName" name="firstName"><br>
-                <input type="text" required placeholder="lastName" name="lastName"><br>
-                <input type="submit" value="UPDATE">
-            </form>
-        </td>
-    </tr>
-</table>
+<a href="/admin/add">Create new user</a>
+<a href="/logout">Logout</a>
 </body>
 </html>

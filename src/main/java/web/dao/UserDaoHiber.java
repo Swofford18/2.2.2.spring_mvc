@@ -13,8 +13,11 @@ import java.util.List;
 @Repository
 public class UserDaoHiber implements UserDAO {
 
-    @Autowired
     private SessionFactory sessionFactory;
+
+    public UserDaoHiber(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
 
     @Override
     public void add(User user) {
@@ -22,7 +25,6 @@ public class UserDaoHiber implements UserDAO {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<User> listUsers() {
         TypedQuery<User> query = sessionFactory.getCurrentSession().createQuery("from User");
         return query.getResultList();
@@ -31,20 +33,27 @@ public class UserDaoHiber implements UserDAO {
     @Override
     public void removeUser(long id) {
 
-        User book = sessionFactory.getCurrentSession().load(User.class, id);
+        User user = sessionFactory.getCurrentSession().load(User.class, id);
 
-        if(book != null){
-            sessionFactory.getCurrentSession().delete(book);
+        if(user != null){
+            sessionFactory.getCurrentSession().delete(user);
         }
     }
 
     @Override
     public User getUserById(long id) {
-        return sessionFactory.getCurrentSession().load(User.class, id);
+        User user = (User) sessionFactory.getCurrentSession().get(User.class, id);
+        return user;
     }
 
     @Override
     public void updateUser(User user) {
         sessionFactory.getCurrentSession().update(user);
+    }
+
+    @Override
+    public User getUserByUsername(String s) {
+        User user = (User) sessionFactory.getCurrentSession().createQuery("from User where username='" + s + "'").uniqueResult();
+        return user;
     }
 }

@@ -1,18 +1,29 @@
 package web.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.w3c.dom.UserDataHandler;
 import web.dao.UserDAO;
 import web.model.User;
 
 import java.util.List;
 
 @Service
-public class UserService {
+@EnableTransactionManagement(proxyTargetClass = true)
+public class UserService implements UserDetailsService {
 
-    @Autowired
-    private UserDAO userDAO;
+    private final UserDAO userDAO;
+
+    public UserService(UserDAO userDAO) {
+        this.userDAO = userDAO;
+    }
 
     @Transactional
     public void add(User user) {
@@ -37,5 +48,11 @@ public class UserService {
     @Transactional
     public void updateUser(User user) {
         userDAO.updateUser(user);
+    }
+
+    @Transactional
+    @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        return userDAO.getUserByUsername(s);
     }
 }

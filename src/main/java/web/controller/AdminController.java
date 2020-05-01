@@ -12,24 +12,31 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @Controller
-@RequestMapping("/users")
-public class UsersController {
+@RequestMapping("/admin")
+public class AdminController {
 
-    @Autowired
     private UserService userService;
+
+    public AdminController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     public String printUsers(ModelMap model) {
         List<User> users = userService.listUsers();
         model.addAttribute("users", users);
-        model.addAttribute("update", 0);
         return "users";
+    }
+
+    @GetMapping(value = "/add")
+    public String newUserPage() {
+        return "new_user";
     }
 
     @RequestMapping(value = "/remove/{id}")
     public String removeUser(@PathVariable("id") long id){
         userService.removeUser(id);
-        return "redirect:/users";
+        return "redirect:/admin";
     }
 
     @PostMapping(value = "/add")
@@ -41,12 +48,20 @@ public class UsersController {
             e.printStackTrace();
         }
 
+        String username = req.getParameter("username");
+        String password = req.getParameter("password");
         String email = req.getParameter("email");
-        String firstName = req.getParameter("firstName");
-        String lastName = req.getParameter("lastName");
-        userService.add(new User(firstName, lastName, email));
+        userService.add(new User(username, password, email));
 
-        return "redirect:/users";
+        return "redirect:/admin";
+    }
+
+    @GetMapping(value = "/update/{id}")
+    public String updateUserG(@PathVariable("id") long id, ModelMap model) {
+
+        User user = userService.getUserById(id);
+        model.addAttribute("user", user);
+        return "edit_user";
     }
 
     @PostMapping(value = "/update")
@@ -59,11 +74,13 @@ public class UsersController {
         }
 
         long id = Long.parseLong(req.getParameter("id"));
+        String username = req.getParameter("username");
+        String password = req.getParameter("password");
         String email = req.getParameter("email");
-        String firstName = req.getParameter("firstName");
-        String lastName = req.getParameter("lastName");
-        userService.updateUser(new User(id, email, firstName, lastName));
+        userService.updateUser(new User(id, username, password, email));
 
-        return "redirect:/users";
+        return "redirect:/admin";
     }
+
+
 }
