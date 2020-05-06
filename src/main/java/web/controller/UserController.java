@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import web.model.User;
 import web.service.UserService;
+import web.service.UserServiceInt;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,7 +18,7 @@ import java.security.Principal;
 @RequestMapping(value = "/")
 public class UserController {
 
-    private UserService userService;
+    private UserServiceInt userService;
 
     public UserController(UserService userService) {
         this.userService = userService;

@@ -16,7 +16,7 @@
     <table>
         <tr>
             <td>ID:</td>
-            <td><input type="text" disabled required name="id" value="${user.id}"></td>
+            <td><input type="text" readonly required name="id" value="${user.id}"></td>
         </tr>
         <tr>
             <td>Username:</td>

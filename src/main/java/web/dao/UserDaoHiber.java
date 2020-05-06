@@ -6,54 +6,66 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import web.model.User;
 
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import java.util.List;
 
 @Repository
 public class UserDaoHiber implements UserDAO {
 
-    private SessionFactory sessionFactory;
+    private EntityManagerFactory entityManagerFactory;
 
-    public UserDaoHiber(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
+    public UserDaoHiber(EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
     }
 
     @Override
     public void add(User user) {
-        sessionFactory.getCurrentSession().save(user);
+
+        EntityManager em = entityManagerFactory.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(user);
+        em.getTransaction().commit();
     }
 
     @Override
     public List<User> listUsers() {
-        TypedQuery<User> query = sessionFactory.getCurrentSession().createQuery("from User");
-        return query.getResultList();
+        EntityManager em = entityManagerFactory.createEntityManager();
+        return em.createQuery("from User").getResultList();
     }
 
     @Override
     public void removeUser(long id) {
 
-        User user = sessionFactory.getCurrentSession().load(User.class, id);
-
-        if(user != null){
-            sessionFactory.getCurrentSession().delete(user);
-        }
+        EntityManager em = entityManagerFactory.createEntityManager();
+        em.getTransaction().begin();
+        User user = em.find(User.class, id);
+        em.remove(user);
+        em.getTransaction().commit();
     }
 
     @Override
     public User getUserById(long id) {
-        User user = (User) sessionFactory.getCurrentSession().get(User.class, id);
-        return user;
+        return entityManagerFactory.createEntityManager().find(User.class, id);
     }
 
     @Override
     public void updateUser(User user) {
-        sessionFactory.getCurrentSession().update(user);
+
+        EntityManager em = entityManagerFactory.createEntityManager();
+        em.getTransaction().begin();
+        User existingUser = em.find(User.class, user.getId());
+        existingUser.setUsername(user.getUsername());
+        existingUser.setPassword(user.getPassword());
+        existingUser.setEmail(user.getEmail());
+        existingUser.setRoles(user.getRoles());
+        em.getTransaction().commit();
     }
 
     @Override
     public User getUserByUsername(String s) {
-        User user = (User) sessionFactory.getCurrentSession().createQuery("from User where username='" + s + "'").uniqueResult();
-        return user;
+        return (User) entityManagerFactory.createEntityManager()
+                .createQuery("from User where username = ?1")
+                .setParameter(1, s)
+                .getSingleResult();
     }
 }
